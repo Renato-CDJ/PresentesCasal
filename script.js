@@ -1,6 +1,14 @@
+// script.js atualizado com nome, data, checkbox posicionado e estilo melhorado
 const user = localStorage.getItem("usuario");
 if (!user) {
   window.location.href = "login.html";
+}
+
+document.body.classList.toggle("tema-escuro", localStorage.getItem("tema") === "escuro");
+
+function alternarTema() {
+  const modoEscuro = document.body.classList.toggle("tema-escuro");
+  localStorage.setItem("tema", modoEscuro ? "escuro" : "claro");
 }
 
 const overlay = document.getElementById("overlay");
@@ -17,18 +25,33 @@ let diaSelecionado = null;
 
 document.getElementById("form-presente").addEventListener("submit", function(e) {
   e.preventDefault();
-  const novo = {
-    quem: user,
-    titulo: titulo.value,
-    descricao: descricao.value,
-    link: link.value,
-    ganhou: false
+
+  const imagemInput = document.getElementById("imagem");
+  const reader = new FileReader();
+  const file = imagemInput.files[0];
+
+  reader.onloadend = function () {
+    const novo = {
+      quem: user,
+      titulo: titulo.value,
+      descricao: descricao.value,
+      link: link.value,
+      imagem: reader.result,
+      data: new Date().toLocaleDateString(),
+      ganhou: false
+    };
+    presentes.push(novo);
+    salvar("presentes", presentes);
+    renderizarPresentes();
+    notificar("Presente salvo!");
+    e.target.reset();
   };
-  presentes.push(novo);
-  salvar("presentes", presentes);
-  this.reset();
-  renderizarPresentes();
-  notificar("Presente salvo!");
+
+  if (file) {
+    reader.readAsDataURL(file);
+  } else {
+    reader.onloadend();
+  }
 });
 
 function renderizarPresentes() {
@@ -38,13 +61,19 @@ function renderizarPresentes() {
     const div = document.createElement("div");
     div.className = "presente-card";
     div.innerHTML = `
-      <p><strong>${p.quem === user ? "Para o outro" : "Para mim"}:</strong> ${p.titulo}</p>
+      <div class="presente-topo">
+        <strong>${p.quem} pediu:</strong> ${p.titulo}<br>
+        <small>Publicado em: ${p.data || ""}</small>
+      </div>
       <p>${p.descricao}</p>
+      ${p.imagem ? `<img src="${p.imagem}" alt="Imagem do presente" />` : ""}
       ${p.link ? `<a href="${p.link}" target="_blank">Ver Link</a><br>` : ""}
-      <label>
-        <input type="checkbox" ${p.ganhou ? "checked" : ""} onchange="marcarRecebido(${i})" ${p.quem !== user ? "disabled" : ""}/> Recebido
-      </label>
-      ${p.quem === user ? `<button onclick="excluirPresente(${i})">Excluir</button>` : ""}
+      <div class="presente-footer">
+        <label>
+          <input type="checkbox" ${p.ganhou ? "checked" : ""} onchange="marcarRecebido(${i})" ${p.quem !== user ? "" : "disabled"}/> Recebido
+        </label>
+        ${p.quem === user ? `<button onclick="excluirPresente(${i})">Excluir</button>` : ""}
+      </div>
     `;
     lista.appendChild(div);
   });
@@ -93,6 +122,9 @@ function gerarCalendario() {
   for (let i = 1; i <= 30; i++) {
     const dia = document.createElement("div");
     dia.className = "dia";
+    if (notas[i] && notas[i].trim() !== "") {
+      dia.classList.add("dia-date");
+    }
     dia.textContent = i;
     dia.onclick = () => abrirModal(i);
     calendario.appendChild(dia);

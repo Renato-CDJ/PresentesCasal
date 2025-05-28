@@ -1,3 +1,4 @@
+<!-- index.html atualizado com upload de imagem e botão de tema -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -11,10 +12,11 @@
   <div id="notificacao"></div>
 
   <header>
-  <h1>Nosso Cantinho 🎁❤️</h1>
-  <p>Em desenvolvimento até 01/09/2025 💡</p>
-  <button onclick="logout()" class="logout-btn">Sair</button>
-</header>
+    <h1>Nosso Cantinho 🎁❤️</h1>
+    <p>Em desenvolvimento até 01/09/2025 💡</p>
+    <button class="tema-btn" onclick="alternarTema()">💡</button>
+    <button onclick="logout()" class="logout-btn">Sair</button>
+  </header>
 
   <main>
     <section>
@@ -26,6 +28,8 @@
         <textarea id="descricao"></textarea>
         <label>Link (opcional)</label>
         <input type="url" id="link" />
+        <label>Imagem do presente</label>
+        <input type="file" id="imagem" accept="image/*" />
         <button type="submit">Salvar Presente</button>
       </form>
     </section>

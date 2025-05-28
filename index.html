@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nosso Cantinho de Presentes</title>
+  <style>
+    :root {
+      --cor-primaria: #ff6f91;
+      --cor-secundaria: #ffe0e9;
+      --cor-clara: #ffffff;
+      --cor-texto: #333;
+      --cor-destaque: #d6336c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--cor-secundaria), #ffe9f0);
+      color: var(--cor-texto);
+      margin: 0; padding: 0;
+    }
+    header {
+      background-color: var(--cor-primaria);
+      padding: 1.5rem;
+      text-align: center;
+      color: white;
+    }
+    main {
+      padding: 1rem;
+      max-width: 900px;
+      margin: auto;
+    }
+    section {
+      background-color: var(--cor-clara);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    section:hover { transform: scale(1.01); }
+    h2 { color: var(--cor-destaque); }
+    label { display: block; margin-top: 1rem; }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      background-color: var(--cor-destaque);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover { background-color: #c41f5d; }
+    .presente-card {
+      background-color: #fff0f5;
+      border: 1px solid #ffc4d6;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: transform 0.3s;
+    }
+    .presente-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+    #calendario {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+      max-width: 350px;
+      margin: auto;
+    }
+    .dia {
+      background-color: #ffe4ec;
+      border-radius: 6px;
+      padding: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      position: relative;
+    }
+    .dia[data-tem-nota="true"]::after {
+      content: "\1F4C5";
+      position: absolute;
+      top: 2px;
+      right: 4px;
+    }
+    #modal, #modal-recado, #login-modal, #notificacao {
+      display: none;
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      z-index: 1000;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 999;
+    }
+    .recado-icone {
+      font-size: 2rem;
+      cursor: pointer;
+      text-align: center;
+      margin-bottom: 1rem;
+      transition: transform 0.3s;
+    }
+    .recado-icone:hover { transform: scale(1.2); }
+    #notificacao {
+      background-color: var(--cor-destaque);
+      color: white;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 8px;
+      animation: fadeInOut 3s forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9) translate(-50%, -50%); }
+      to { opacity: 1; transform: scale(1) translate(-50%, -50%); }
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; display: none; }
+    }
+    @media (max-width: 600px) {
+      main { padding: 1rem; }
+      section { padding: 1rem; }
+      #calendario { grid-template-columns: repeat(7, 1fr); font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="overlay"></div>
+  <div id="login-modal">
+    <h2>Quem está acessando?</h2>
+    <button onclick="setUser('Pir')">Pir</button>
+    <button onclick="setUser('Renato')">Renato</button>
+  </div>
+  <div id="notificacao"></div>
+
+  <header>
+    <h1>Nosso Cantinho de Presentes 🎁❤️</h1>
+    <p>Ideias de presentes e datas especiais 💡</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Adicionar Presente</h2>
+      <form id="form-presente">
+        <label for="titulo">Nome do presente</label>
+        <input type="text" id="titulo" name="titulo" required>
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao" name="descricao"></textarea>
+        <label for="link">Link (opcional)</label>
+        <input type="url" id="link" name="link">
+        <label><input type="checkbox" id="ganhou"> Marcar como recebido</label>
+        <button type="submit">Salvar Presente</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Lista de Presentes</h2>
+      <div id="lista-presentes"></div>
+    </section>
+
+    <section>
+      <h2>Calendário de Datas</h2>
+      <div id="calendario"></div>
+    </section>
+
+    <section>
+      <h2>Recadinhos 💌</h2>
+      <form id="form-recado">
+        <textarea id="mensagem" placeholder="Escreva um recado misterioso..." required></textarea>
+        <button type="submit">Enviar Recado</button>
+      </form>
+      <div class="recado-icone" onclick="abrirRecado()">📩</div>
+    </section>
+  </main>
+
+  <div id="modal"></div>
+  <div id="modal-recado">
+    <h3>Recadinho Recebido 💖</h3>
+    <div id="lista-recados"></div>
+  </div>
+
+  <script>
+    let user = localStorage.getItem('usuario');
+    const overlay = document.getElementById('overlay');
+    const loginModal = document.getElementById('login-modal');
+    const modal = document.getElementById('modal');
+    const modalRecado = document.getElementById('modal-recado');
+    const calendario = document.getElementById('calendario');
+    const notificacao = document.getElementById('notificacao');
+
+    let presentes = JSON.parse(localStorage.getItem('presentes')) || [];
+    let recados = JSON.parse(localStorage.getItem('recados')) || [];
+    let notas = JSON.parse(localStorage.getItem('notas')) || {};
+    let diaSelecionado = null;
+
+    if (!user) {
+      overlay.style.display = 'block';
+      loginModal.style.display = 'block';
+    } else {
+      inicializar();
+    }
+
+    function setUser(valor) {
+      user = valor;
+      localStorage.setItem('usuario', user);
+      overlay.style.display = 'none';
+      loginModal.style.display = 'none';
+      inicializar();
+    }
+
+    function inicializar() {
+      renderizarPresentes();
+      gerarCalendario();
+      verificarNotificacoes();
+    }
+
+    document.getElementById('form-presente').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const presente = {
+        quem: user,
+        titulo: this.titulo.value,
+        descricao: this.descricao.value,
+        link: this.link.value,
+        ganhou: document.getElementById('ganhou').checked
+      };
+      presentes.push(presente);
+      localStorage.setItem('presentes', JSON.stringify(presentes));
+      this.reset();
+      renderizarPresentes();
+      mostrarNotificacao('Presente salvo com sucesso! 🎁');
+    });
+
+    function renderizarPresentes() {
+      const lista = document.getElementById('lista-presentes');
+      lista.innerHTML = '';
+      presentes.forEach((p, index) => {
+        if (p.quem !== user) {
+          const div = document.createElement('div');
+          div.className = 'presente-card';
+          div.innerHTML = `
+            <strong>Para mim 🎁</strong>
+            <p><strong>Presente:</strong> ${p.titulo}</p>
+            <p><strong>Descrição:</strong> ${p.descricao}</p>
+            ${p.link ? `<p><a href="${p.link}" target="_blank">Ver Link 🔗</a></p>` : ''}
+            <p><strong>Status:</strong> ${p.ganhou ? '🎉 Já ganhei!' : 'Ainda não ganhei'}</p>
+            <button onclick="excluirPresente(${index})">🗑️ Excluir</button>
+          `;
+          lista.appendChild(div);
+        }
+      });
+    }
+
+    function excluirPresente(index) {
+      presentes.splice(index, 1);
+      localStorage.setItem('presentes', JSON.stringify(presentes));
+      renderizarPresentes();
+      mostrarNotificacao('Presente excluído! ❌');
+    }
+
+    document.getElementById('form-recado').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const texto = document.getElementById('mensagem').value;
+      const data = new Date().toLocaleString('pt-BR');
+      recados.unshift({ texto, data, para: user === 'Pir' ? 'Renato' : 'Pir' });
+      localStorage.setItem('recados', JSON.stringify(recados));
+      this.reset();
+      mostrarNotificacao('Recado enviado! 💌');
+    });
+
+    function abrirRecado() {
+      const listaRecados = document.getElementById('lista-recados');
+      listaRecados.innerHTML = '';
+      const meusRecados = recados.filter(r => r.para === user);
+      meusRecados.forEach(r => {
+        const div = document.createElement('div');
+        div.innerHTML = `<p>${r.texto}</p><small><em>${r.data}</em></small><hr>`;
+        listaRecados.appendChild(div);
+      });
+      overlay.style.display = 'block';
+      modalRecado.style.display = 'block';
+    }
+
+    function gerarCalendario() {
+      calendario.innerHTML = '';
+      for (let i = 1; i <= 30; i++) {
+        const dia = document.createElement('div');
+        dia.className = 'dia';
+        dia.textContent = i;
+        dia.dataset.temNota = !!notas[i];
+        dia.onclick = () => abrirModal(i);
+        calendario.appendChild(dia);
+      }
+    }
+
+    function abrirModal(dia) {
+      diaSelecionado = dia;
+      overlay.style.display = 'block';
+      modal.innerHTML = `
+        <h3>Adicionar Nota</h3>
+        <textarea id="nota-dia" placeholder="Escreva algo para esse dia...">${notas[dia] || ''}</textarea>
+        <button onclick="salvarNota()">Salvar</button>
+        <button onclick="excluirNota(${dia})">Excluir</button>
+      `;
+      modal.style.display = 'block';
+    }
+
+    function salvarNota() {
+      const texto = document.getElementById('nota-dia').value;
+      notas[diaSelecionado] = texto;
+      localStorage.setItem('notas', JSON.stringify(notas));
+      overlay.style.display = 'none';
+      modal.style.display = 'none';
+      gerarCalendario();
+      mostrarNotificacao('Data adicionada no calendário! 📅');
+    }
+
+    function excluirNota(dia) {
+      delete notas[dia];
+      localStorage.setItem('notas', JSON.stringify(notas));
+      overlay.style.display = 'none';
+      modal.style.display = 'none';
+      gerarCalendario();
+      mostrarNotificacao('Data removida do calendário! ❌');
+    }
+
+    function verificarNotificacoes() {
+      const meusRecados = recados.filter(r => r.para === user);
+      if (meusRecados.length > 0) {
+        document.querySelector('.recado-icone').style.color = 'red';
+      }
+    }
+
+    function mostrarNotificacao(texto) {
+      notificacao.textContent = texto;
+      notificacao.style.display = 'block';
+      setTimeout(() => notificacao.style.display = 'none', 3000);
+    }
+
+    overlay.onclick = () => {
+      overlay.style.display = 'none';
+      modal.style.display = 'none';
+      modalRecado.style.display = 'none';
+    };
+  </script>
+</body>
+</html>

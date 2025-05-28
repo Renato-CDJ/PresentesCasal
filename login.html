@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Nosso Cantinho</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h2>Nosso Cantinho de Presentes 🎁</h2>
+    <form id="login-form">
+      <label for="username">Usuário:</label>
+      <select id="username">
+        <option value="Renato">Renato</option>
+        <option value="Pir">Pir</option>
+      </select>
+
+      <label for="password">Senha:</label>
+      <input type="password" id="password" required />
+
+      <button type="submit">Entrar</button>
+    </form>
+    <div id="login-erro" class="erro"></div>
+  </div>
+  <script>
+    document.getElementById("login-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+
+      if ((user === "Renato" && pass === "123") || (user === "Pir" && pass === "123")) {
+        localStorage.setItem("usuario", user);
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("login-erro").textContent = "Usuário ou senha inválidos!";
+      }
+    });
+  </script>
+</body>
+</html>

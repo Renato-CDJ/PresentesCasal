@@ -101,22 +101,18 @@ window.excluirPresente = async function(id) {
   notificar("Presente excluído!");
 };
 
-// Recados
-let recadosIds = new Set();
+
+// Recados (corrigido para capturar todos)
 onSnapshot(collection(db, "recados"), (snapshot) => {
-  recados = [];
-  snapshot.docChanges().forEach(change => {
-    const r = change.doc.data();
-    const id = change.doc.id;
-    if (change.type === "added") {
-      recados.push(r);
-      if (r.para === user && !recadosIds.has(id)) {
-        recadoIcone.classList.add("nova-mensagem");
-        recadosIds.add(id);
-      }
-    }
-  });
+  recados = snapshot.docs.map(doc => doc.data());
+  const ids = snapshot.docs.map(doc => doc.id);
+  recadosIds = new Set(ids);
+  const novos = recados.filter(r => r.para === user);
+  if (novos.length > 0) {
+    recadoIcone.classList.add("nova-mensagem");
+  }
 });
+
 
 document.getElementById("form-recado").addEventListener("submit", async function(e) {
   e.preventDefault();

@@ -128,10 +128,18 @@ document.getElementById("form-recado").addEventListener("submit", async function
 });
 
 
+
 window.abrirRecado = function () {
   const lista = document.getElementById("lista-recados");
   lista.innerHTML = "";
-  const todos = recados.filter(r => r.para === user || r.de === user);
+  const todos = recados
+    .filter(r => r.para === user || r.de === user)
+    .sort((a, b) => {
+      const d1 = new Date(a.data + ' ' + a.hora);
+      const d2 = new Date(b.data + ' ' + b.hora);
+      return d1 - d2;
+    });
+
   todos.forEach(r => {
     const div = document.createElement("div");
     const classe = r.de === user ? "eu" : "outro";
@@ -148,6 +156,7 @@ window.abrirRecado = function () {
   lista.scrollTop = lista.scrollHeight;
   recadoIcone.classList.remove("nova-mensagem");
 };
+
 
 
 // Calendário

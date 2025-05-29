@@ -7,6 +7,42 @@
   <title>Nosso Cantinho de Presentes</title>
   <link rel="stylesheet" href="styles.css" />
 
+<!-- Adicione dentro do <head> do seu index.html -->
+<script type="module">
+  // Import the functions you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDyIEHrdcMttMA1RylqqG_wokheP5EcIc4",
+    authDomain: "presentescasal.firebaseapp.com",
+    projectId: "presentescasal",
+    storageBucket: "presentescasal.firebasestorage.app",
+    messagingSenderId: "518416733032",
+    appId: "1:518416733032:web:c6ccf8b438b5563864bcdd",
+    measurementId: "G-VECFNQVX87"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+  // Exemplo: salvar um presente
+  const salvarPresente = async (dados) => {
+    await addDoc(collection(db, "presentes"), dados);
+  };
+
+  // Exemplo: ouvir novos presentes em tempo real
+  onSnapshot(collection(db, "presentes"), (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      if (change.type === "added") {
+        console.log("Novo presente:", change.doc.data());
+      }
+    });
+  });
+</script>
+
+
 </head>
 <body>
   <div id="overlay"></div>

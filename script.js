@@ -1,5 +1,7 @@
 
-import { db, collection, addDoc, onSnapshot, updateDoc, deleteDoc, doc } from './firebase.js';
+import {
+  db, collection, addDoc, onSnapshot, updateDoc, deleteDoc, doc
+} from './firebase.js';
 
 const user = localStorage.getItem("usuario");
 if (!user) {
@@ -8,10 +10,15 @@ if (!user) {
 
 document.body.classList.toggle("tema-escuro", localStorage.getItem("tema") === "escuro");
 
-function alternarTema() {
+window.alternarTema = function () {
   const modoEscuro = document.body.classList.toggle("tema-escuro");
   localStorage.setItem("tema", modoEscuro ? "escuro" : "claro");
-}
+};
+
+window.logout = function () {
+  localStorage.removeItem("usuario");
+  window.location.href = "login.html";
+};
 
 const overlay = document.getElementById("overlay");
 const modal = document.getElementById("modal");
@@ -20,10 +27,12 @@ const notaDia = document.getElementById("nota-dia");
 const calendario = document.getElementById("calendario");
 const notificacao = document.getElementById("notificacao");
 
-let presentes = [];
 let diaSelecionado = null;
+let presentes = [];
+let recados = [];
+let notas = {};
 
-// 🔄 Escuta em tempo real os presentes
+// -------- Presentes --------
 onSnapshot(collection(db, "presentes"), (snapshot) => {
   presentes = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
   renderizarPresentes();
@@ -31,7 +40,6 @@ onSnapshot(collection(db, "presentes"), (snapshot) => {
 
 document.getElementById("form-presente").addEventListener("submit", async function(e) {
   e.preventDefault();
-
   const imagemInput = document.getElementById("imagem");
   const reader = new FileReader();
   const file = imagemInput.files[0];
@@ -84,18 +92,49 @@ function renderizarPresentes() {
 }
 
 window.marcarRecebido = async function(id, status) {
-  const ref = doc(db, "presentes", id);
-  await updateDoc(ref, { ganhou: status });
-}
+  await updateDoc(doc(db, "presentes", id), { ganhou: status });
+};
 
 window.excluirPresente = async function(id) {
-  const ref = doc(db, "presentes", id);
-  await deleteDoc(ref);
+  await deleteDoc(doc(db, "presentes", id));
   notificar("Presente excluído!");
-}
+};
 
-// Temporário: recados, calendário e outros continuam com localStorage até integração
-let notas = JSON.parse(localStorage.getItem("notas")) || {};
+// -------- Recados --------
+onSnapshot(collection(db, "recados"), (snapshot) => {
+  recados = snapshot.docs.map(doc => doc.data());
+});
+
+document.getElementById("form-recado").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const texto = document.getElementById("mensagem").value;
+  const para = user === "Renato" ? "Pir" : "Renato";
+  const dado = { texto, para, data: new Date().toLocaleDateString() };
+  await addDoc(collection(db, "recados"), dado);
+  this.reset();
+  notificar("Recado enviado!");
+});
+
+window.abrirRecado = function () {
+  const lista = document.getElementById("lista-recados");
+  lista.innerHTML = "";
+  const meus = recados.filter(r => r.para === user);
+  meus.forEach(r => {
+    const div = document.createElement("div");
+    div.innerHTML = `<p>${r.texto}<br><small>${r.data}</small></p>`;
+    lista.appendChild(div);
+  });
+  overlay.style.display = "block";
+  modalRecado.style.display = "block";
+};
+
+// -------- Calendário --------
+onSnapshot(collection(db, "notas"), (snapshot) => {
+  notas = {};
+  snapshot.docs.forEach(doc => notas[doc.id] = doc.data().texto);
+  gerarCalendario();
+});
+
 function gerarCalendario() {
   calendario.innerHTML = '';
   for (let i = 1; i <= 30; i++) {
@@ -117,14 +156,15 @@ function abrirModal(dia) {
   modal.style.display = "block";
 }
 
-function salvarNota() {
-  notas[diaSelecionado] = notaDia.value;
-  localStorage.setItem("notas", JSON.stringify(notas));
+window.salvarNota = async function () {
+  const texto = notaDia.value;
+  await updateDoc(doc(db, "notas", String(diaSelecionado)), { texto }).catch(async () => {
+    await addDoc(collection(db, "notas"), { texto, id: String(diaSelecionado) });
+  });
   overlay.style.display = "none";
   modal.style.display = "none";
-  gerarCalendario();
   notificar("Nota salva!");
-}
+};
 
 function notificar(texto) {
   notificacao.textContent = texto;
@@ -137,10 +177,5 @@ overlay.onclick = () => {
   modal.style.display = "none";
   modalRecado.style.display = "none";
 };
-
-function logout() {
-  localStorage.removeItem("usuario");
-  window.location.href = "login.html";
-}
 
 gerarCalendario();

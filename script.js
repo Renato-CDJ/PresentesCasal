@@ -129,6 +129,7 @@ document.getElementById("form-recado").addEventListener("submit", async function
 
 
 
+
 window.abrirRecado = function () {
   const lista = document.getElementById("lista-recados");
   lista.innerHTML = "";
@@ -151,11 +152,18 @@ window.abrirRecado = function () {
     `;
     lista.appendChild(div);
   });
+
   overlay.style.display = "block";
   modalRecado.style.display = "block";
-  lista.scrollTop = lista.scrollHeight;
+
+  // Garantir rolagem para a parte inferior (última mensagem visível)
+  setTimeout(() => {
+    lista.scrollTop = lista.scrollHeight;
+  }, 50);
+
   recadoIcone.classList.remove("nova-mensagem");
 };
+
 
 
 

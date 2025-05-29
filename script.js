@@ -179,3 +179,42 @@ overlay.onclick = () => {
 };
 
 gerarCalendario();
+
+const recadoIcone = document.querySelector(".recado-icone");
+const painelEmojis = document.createElement("div");
+painelEmojis.id = "painel-emojis";
+painelEmojis.innerHTML = ["❤️", "😊", "🎁", "🥰", "😢", "😂", "😍", "🎉", "😴", "👏"].map(e => \`<button>${e}</button>\`).join("");
+document.getElementById("form-recado").appendChild(painelEmojis);
+
+painelEmojis.addEventListener("click", (e) => {
+  if (e.target.tagName === "BUTTON") {
+    const input = document.getElementById("mensagem");
+    input.value += e.target.textContent;
+    input.focus();
+  }
+});
+
+let recadosIds = new Set();
+onSnapshot(collection(db, "recados"), (snapshot) => {
+  snapshot.docChanges().forEach(change => {
+    const r = change.doc.data();
+    if (change.type === "added" && r.para === user && !recadosIds.has(change.doc.id)) {
+      recadoIcone.classList.add("nova-mensagem");
+      recadosIds.add(change.doc.id);
+    }
+  });
+});
+
+window.abrirRecado = function () {
+  const lista = document.getElementById("lista-recados");
+  lista.innerHTML = "";
+  const meus = recados.filter(r => r.para === user);
+  meus.forEach(r => {
+    const div = document.createElement("div");
+    div.innerHTML = `<p>${r.texto}<br><small>${r.data}</small></p>`;
+    lista.appendChild(div);
+  });
+  overlay.style.display = "block";
+  modalRecado.style.display = "block";
+  recadoIcone.classList.remove("nova-mensagem");
+};

@@ -1,3 +1,4 @@
+/* styles.css com ajustes finais */
 :root {
   --cor-primaria: #ff6f91;
   --cor-secundaria: #ffe0e9;
@@ -6,11 +7,21 @@
   --sombra: rgba(0,0,0,0.1);
 }
 
+body.tema-escuro {
+  --cor-primaria: #1e1e2f;
+  --cor-secundaria: #2a2a40;
+  --cor-destaque: #bb86fc;
+  --cor-fundo: #121212;
+  --sombra: rgba(255,255,255,0.05);
+  color: #eee;
+  background: linear-gradient(to right, var(--cor-secundaria), #1c1c2c);
+}
+
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to right, var(--cor-secundaria), #fff0f5);
   margin: 0;
   color: #333;
+  background: linear-gradient(to right, var(--cor-secundaria), #fff0f5);
 }
 
 header {
@@ -20,6 +31,18 @@ header {
   padding: 2rem;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
+  position: relative;
+}
+
+.tema-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
 
 main {
@@ -47,6 +70,15 @@ input, textarea, select {
   border-radius: 10px;
   border: 1px solid #ccc;
   margin-top: 0.4rem;
+  background: white;
+}
+
+body.tema-escuro input,
+body.tema-escuro textarea,
+body.tema-escuro select {
+  background: #2a2a40;
+  color: white;
+  border: 1px solid #444;
 }
 
 button {
@@ -65,10 +97,65 @@ button:hover {
 
 .presente-card {
   background: #fff0f5;
-  border: 1px solid #ffc4d6;
+  border: 2px solid #ffc4d6;
+  border-radius: 20px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.presente-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+body.tema-escuro .presente-card {
+  background: #2a2a40;
+  border: 2px solid #444;
+}
+
+.presente-card img {
+  max-width: 180px;
+  max-height: 180px;
   border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  object-fit: cover;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+.presente-card a.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--cor-destaque);
+  font-weight: bold;
+}
+
+.presente-card a.link::before {
+  content: '\1F517';
+}
+
+.presente-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.presente-topo {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--cor-destaque);
+}
+
+.presente-footer label {
+  color: var(--cor-destaque);
 }
 
 .calendario {
@@ -83,6 +170,18 @@ button:hover {
   padding: 8px;
   text-align: center;
   cursor: pointer;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.dia-date {
+  background: #ffb3c6 !important;
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  from { box-shadow: 0 0 0 rgba(0,0,0,0); }
+  to { box-shadow: 0 0 10px #ffb3c6; }
 }
 
 #modal, #modal-recado {
@@ -96,6 +195,11 @@ button:hover {
   transform: translate(-50%, -50%);
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   z-index: 10;
+}
+
+body.tema-escuro #modal, body.tema-escuro #modal-recado {
+  background: #2a2a40;
+  color: white;
 }
 
 #overlay {
@@ -150,73 +254,7 @@ button:hover {
 }
 
 .assinatura {
-
   text-align: center;
 }
-.recado-icone {
-  font-size: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.3s;
-  position: relative;
-}
 
-.recado-icone.nova-mensagem {
-  animation: brilho-recado 1s infinite alternate;
-  color: var(--cor-destaque);
-}
 
-@keyframes brilho-recado {
-  from { text-shadow: 0 0 5px var(--cor-destaque); }
-  to { text-shadow: 0 0 15px var(--cor-destaque); }
-}
-
-#painel-emojis {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 0.5rem;
-}
-
-#painel-emojis button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-#painel-emojis button:hover {
-  transform: scale(1.2);
-}
-
-/* Animação de brilho para nova mensagem */
-.recado-icone.nova-mensagem {
-  animation: brilho-recado 1s infinite alternate;
-  color: var(--cor-destaque);
-}
-
-@keyframes brilho-recado {
-  from { text-shadow: 0 0 5px var(--cor-destaque); }
-  to { text-shadow: 0 0 15px var(--cor-destaque); }
-}
-
-/* Painel de emojis */
-#painel-emojis {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 0.5rem;
-}
-
-#painel-emojis button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-#painel-emojis button:hover {
-  transform: scale(1.2);
-}

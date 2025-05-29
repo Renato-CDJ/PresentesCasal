@@ -81,26 +81,21 @@
       <div id="calendario" class="calendario"></div>
     </section>
 
-    <section>
-      <h2>Recadinhos 💌</h2>
-      <form id="form-recado">
-        <textarea id="mensagem" placeholder="Escreva um recado..." required></textarea>
-        <button type="submit">Enviar Recado</button>
-      </form>
-      <div class="recado-icone" onclick="abrirRecado()">📩</div>
-    </section>
+    <!-- Recadinhos como chat em celular -->
+<section id="recadinhos">
+  <div class="chat-container">
+    <div class="chat-header">
+      <span id="nome-chat">Chat com ❤️</span>
+    </div>
+    <div id="lista-recados" class="chat-mensagens"></div>
+    <form id="form-recado" class="chat-input-area">
+      <input type="text" id="mensagem" placeholder="Digite uma mensagem..." required />
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+</section>
   </main>
 
-  <div id="modal">
-    <h3>Adicionar Nota</h3>
-    <textarea id="nota-dia" placeholder="Escreva algo..."></textarea>
-    <button onclick="salvarNota()">Salvar</button>
-  </div>
-
-  <div id="modal-recado">
-    <h3>Recadinho Recebido 💖</h3>
-    <div id="lista-recados"></div>
-  </div>
 
 <script type="module" src="firebase.js"></script>
 <script type="module" src="script.js"></script>

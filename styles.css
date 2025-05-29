@@ -184,23 +184,9 @@ body.tema-escuro .presente-card {
   to { box-shadow: 0 0 10px #ffb3c6; }
 }
 
-#modal, #modal-recado {
-  display: none;
-  position: fixed;
-  background: white;
-  padding: 40px;
-  border-radius: 12px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  z-index: 10;
-}
 
-body.tema-escuro #modal, body.tema-escuro #modal-recado {
-  background: #2a2a40;
-  color: white;
-}
+
+
 
 #overlay {
   display: none;
@@ -211,16 +197,9 @@ body.tema-escuro #modal, body.tema-escuro #modal-recado {
   z-index: 5;
 }
 
-.recado-icone {
-  font-size: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
 
-.recado-icone:hover {
-  transform: scale(1.2);
-}
+
+
 
 .login-container {
   max-width: 400px;
@@ -257,116 +236,91 @@ body.tema-escuro #modal, body.tema-escuro #modal-recado {
   text-align: center;
 }
 
+/* Adicionado agora */
 
-
-/* Estilo para balões de recados */
-.recado {
-  max-width: 90%;
-  padding: 0.8rem 1rem;
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  background: #fff0f5;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  position: relative;
+/* Tela de celular simulada */
+.chat-container {
+  max-width: 400px;
+  height: 500px;
+  border-radius: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--cor-fundo);
 }
 
-body.tema-escuro .recado {
-  background: #2a2a40;
+.chat-header {
+  background: var(--cor-destaque);
   color: white;
-  border: 1px solid #444;
-}
-
-.recado .remetente {
+  text-align: center;
+  padding: 1rem;
   font-weight: bold;
-  color: var(--cor-destaque);
-  margin-bottom: 0.3rem;
 }
 
-.recado .hora {
-  font-size: 0.8rem;
-  color: #888;
-  margin-top: 0.5rem;
-  text-align: right;
-}
-
-/* Área de recados com rolagem */
-#lista-recados {
-  max-height: 300px;
+.chat-mensagens {
+  flex: 1;
+  padding: 1rem;
   overflow-y: auto;
-  padding-right: 10px;
-  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--cor-secundaria);
 }
 
-#lista-recados::-webkit-scrollbar {
-  width: 6px;
+.chat-input-area {
+  display: flex;
+  gap: 10px;
+  padding: 1rem;
+  border-top: 1px solid #ddd;
+  background: var(--cor-fundo);
 }
 
-#lista-recados::-webkit-scrollbar-thumb {
-  background-color: var(--cor-destaque);
-  border-radius: 10px;
+.chat-input-area input {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #ccc;
 }
 
+.chat-input-area button {
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  border: none;
+  background: var(--cor-destaque);
+  color: white;
+  font-weight: bold;
+}
 
-/* Balões de chat */
+/* Bolhas de mensagem */
 .recado {
+  padding: 0.6rem 1rem;
   max-width: 75%;
-  padding: 0.8rem 1rem;
-  border-radius: 12px;
-  margin-bottom: 0.8rem;
-  background: #fff0f5;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 20px;
+  background: #ffe0f0;
   position: relative;
-  clear: both;
+  word-wrap: break-word;
 }
 
-body.tema-escuro .recado {
-  background: #2a2a40;
+.recado.eu {
+  align-self: flex-end;
+  background: var(--cor-destaque);
   color: white;
-  border: 1px solid #444;
+  border-bottom-right-radius: 0;
 }
 
-.recado .remetente {
-  font-weight: bold;
-  color: var(--cor-destaque);
-  margin-bottom: 0.3rem;
+.recado.outro {
+  align-self: flex-start;
+  background: #fff;
+  color: #333;
+  border-bottom-left-radius: 0;
 }
 
 .recado .hora {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
+  text-align: right;
+  margin-top: 4px;
   color: #888;
-  margin-top: 0.5rem;
-  text-align: right;
 }
 
-/* Mensagens enviadas por mim */
-.recado.eu {
-  background-color: #ffe0f0;
-  float: right;
-  text-align: right;
-}
-
-body.tema-escuro .recado.eu {
-  background-color: #3a3a55;
-}
-
-/* Mensagens recebidas */
-.recado.outro {
-  float: left;
-}
-
-/* Área com rolagem */
-#lista-recados {
-  max-height: 300px;
-  overflow-y: auto;
-  padding-right: 10px;
-  margin-top: 1rem;
-}
-
-#lista-recados::-webkit-scrollbar {
-  width: 6px;
-}
-
-#lista-recados::-webkit-scrollbar-thumb {
-  background-color: var(--cor-destaque);
-  border-radius: 10px;
-}

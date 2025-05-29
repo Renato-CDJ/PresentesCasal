@@ -258,8 +258,6 @@ body.tema-escuro #modal, body.tema-escuro #modal-recado {
 }
 
 
-
-
 /* Estilo para balões de recados */
 .recado {
   max-width: 90%;
@@ -288,4 +286,21 @@ body.tema-escuro .recado {
   color: #888;
   margin-top: 0.5rem;
   text-align: right;
+}
+
+/* Área de recados com rolagem */
+#lista-recados {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-top: 1rem;
+}
+
+#lista-recados::-webkit-scrollbar {
+  width: 6px;
+}
+
+#lista-recados::-webkit-scrollbar-thumb {
+  background-color: var(--cor-destaque);
+  border-radius: 10px;
 }

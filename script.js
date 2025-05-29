@@ -1,3 +1,4 @@
+
 import {
   db, collection, addDoc, onSnapshot, updateDoc, deleteDoc, doc
 } from './firebase.js';
@@ -25,13 +26,14 @@ const modalRecado = document.getElementById("modal-recado");
 const notaDia = document.getElementById("nota-dia");
 const calendario = document.getElementById("calendario");
 const notificacao = document.getElementById("notificacao");
+const recadoIcone = document.querySelector(".recado-icone");
 
 let diaSelecionado = null;
 let presentes = [];
 let recados = [];
 let notas = {};
 
-// -------- Presentes --------
+// Presentes
 onSnapshot(collection(db, "presentes"), (snapshot) => {
   presentes = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
   renderizarPresentes();
@@ -99,9 +101,21 @@ window.excluirPresente = async function(id) {
   notificar("Presente excluído!");
 };
 
-// -------- Recados --------
+// Recados
+let recadosIds = new Set();
 onSnapshot(collection(db, "recados"), (snapshot) => {
-  recados = snapshot.docs.map(doc => doc.data());
+  recados = [];
+  snapshot.docChanges().forEach(change => {
+    const r = change.doc.data();
+    const id = change.doc.id;
+    if (change.type === "added") {
+      recados.push(r);
+      if (r.para === user && !recadosIds.has(id)) {
+        recadoIcone.classList.add("nova-mensagem");
+        recadosIds.add(id);
+      }
+    }
+  });
 });
 
 document.getElementById("form-recado").addEventListener("submit", async function(e) {
@@ -109,14 +123,13 @@ document.getElementById("form-recado").addEventListener("submit", async function
   const texto = document.getElementById("mensagem").value;
   const para = user === "Renato" ? "Pir" : "Renato";
   const agora = new Date();
-const data = agora.toLocaleDateString();
-const hora = agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-const dado = { texto, para, de: user, data, hora };
+  const data = agora.toLocaleDateString();
+  const hora = agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const dado = { texto, para, de: user, data, hora };
   await addDoc(collection(db, "recados"), dado);
   this.reset();
   notificar("Recado enviado!");
 });
-
 
 window.abrirRecado = function () {
   const lista = document.getElementById("lista-recados");
@@ -134,10 +147,11 @@ window.abrirRecado = function () {
   });
   overlay.style.display = "block";
   modalRecado.style.display = "block";
+  lista.scrollTop = lista.scrollHeight;
+  recadoIcone.classList.remove("nova-mensagem");
 };
 
-
-// -------- Calendário --------
+// Calendário
 onSnapshot(collection(db, "notas"), (snapshot) => {
   notas = {};
   snapshot.docs.forEach(doc => notas[doc.id] = doc.data().texto);
@@ -167,7 +181,8 @@ function abrirModal(dia) {
 
 window.salvarNota = async function () {
   const texto = notaDia.value;
-  await updateDoc(doc(db, "notas", String(diaSelecionado)), { texto }).catch(async () => {
+  const ref = doc(db, "notas", String(diaSelecionado));
+  await updateDoc(ref, { texto }).catch(async () => {
     await addDoc(collection(db, "notas"), { texto, id: String(diaSelecionado) });
   });
   overlay.style.display = "none";

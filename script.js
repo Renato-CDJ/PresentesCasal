@@ -1,4 +1,6 @@
-// script.js atualizado com nome, data, checkbox posicionado e estilo melhorado
+
+import { db, collection, addDoc, onSnapshot, updateDoc, deleteDoc, doc } from './firebase.js';
+
 const user = localStorage.getItem("usuario");
 if (!user) {
   window.location.href = "login.html";
@@ -18,19 +20,23 @@ const notaDia = document.getElementById("nota-dia");
 const calendario = document.getElementById("calendario");
 const notificacao = document.getElementById("notificacao");
 
-let presentes = JSON.parse(localStorage.getItem("presentes")) || [];
-let recados = JSON.parse(localStorage.getItem("recados")) || [];
-let notas = JSON.parse(localStorage.getItem("notas")) || {};
+let presentes = [];
 let diaSelecionado = null;
 
-document.getElementById("form-presente").addEventListener("submit", function(e) {
+// 🔄 Escuta em tempo real os presentes
+onSnapshot(collection(db, "presentes"), (snapshot) => {
+  presentes = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+  renderizarPresentes();
+});
+
+document.getElementById("form-presente").addEventListener("submit", async function(e) {
   e.preventDefault();
 
   const imagemInput = document.getElementById("imagem");
   const reader = new FileReader();
   const file = imagemInput.files[0];
 
-  reader.onloadend = function () {
+  reader.onloadend = async function () {
     const novo = {
       quem: user,
       titulo: titulo.value,
@@ -40,9 +46,7 @@ document.getElementById("form-presente").addEventListener("submit", function(e) 
       data: new Date().toLocaleDateString(),
       ganhou: false
     };
-    presentes.push(novo);
-    salvar("presentes", presentes);
-    renderizarPresentes();
+    await addDoc(collection(db, "presentes"), novo);
     notificar("Presente salvo!");
     e.target.reset();
   };
@@ -57,7 +61,7 @@ document.getElementById("form-presente").addEventListener("submit", function(e) 
 function renderizarPresentes() {
   const lista = document.getElementById("lista-presentes");
   lista.innerHTML = '';
-  presentes.forEach((p, i) => {
+  presentes.forEach((p) => {
     const div = document.createElement("div");
     div.className = "presente-card";
     div.innerHTML = `
@@ -67,56 +71,31 @@ function renderizarPresentes() {
       </div>
       <p>${p.descricao}</p>
       ${p.imagem ? `<img src="${p.imagem}" alt="Imagem do presente" />` : ""}
-      ${p.link ? `<a href="${p.link}" target="_blank">Ver Link</a><br>` : ""}
+      ${p.link ? `<a href="${p.link}" target="_blank" class="link">Ver Link</a><br>` : ""}
       <div class="presente-footer">
         <label>
-          <input type="checkbox" ${p.ganhou ? "checked" : ""} onchange="marcarRecebido(${i})" ${p.quem !== user ? "" : "disabled"}/> Recebido
+          <input type="checkbox" ${p.ganhou ? "checked" : ""} onchange="marcarRecebido('${p.id}', ${!p.ganhou})" ${p.quem !== user ? "" : "disabled"}/> Recebido
         </label>
-        ${p.quem === user ? `<button onclick="excluirPresente(${i})">Excluir</button>` : ""}
+        ${p.quem === user ? `<button onclick="excluirPresente('${p.id}')">Excluir</button>` : ""}
       </div>
     `;
     lista.appendChild(div);
   });
 }
 
-function marcarRecebido(i) {
-  presentes[i].ganhou = !presentes[i].ganhou;
-  salvar("presentes", presentes);
-  renderizarPresentes();
+window.marcarRecebido = async function(id, status) {
+  const ref = doc(db, "presentes", id);
+  await updateDoc(ref, { ganhou: status });
 }
 
-function excluirPresente(i) {
-  if (presentes[i].quem === user) {
-    presentes.splice(i, 1);
-    salvar("presentes", presentes);
-    renderizarPresentes();
-    notificar("Presente excluído!");
-  }
+window.excluirPresente = async function(id) {
+  const ref = doc(db, "presentes", id);
+  await deleteDoc(ref);
+  notificar("Presente excluído!");
 }
 
-document.getElementById("form-recado").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const texto = document.getElementById("mensagem").value;
-  const para = user === "Renato" ? "Pir" : "Renato";
-  recados.unshift({ texto, para, data: new Date().toLocaleDateString() });
-  salvar("recados", recados);
-  this.reset();
-  notificar("Recado enviado!");
-});
-
-function abrirRecado() {
-  const lista = document.getElementById("lista-recados");
-  lista.innerHTML = "";
-  const meus = recados.filter(r => r.para === user);
-  meus.forEach(r => {
-    const div = document.createElement("div");
-    div.innerHTML = `<p>${r.texto}<br><small>${r.data}</small></p>`;
-    lista.appendChild(div);
-  });
-  overlay.style.display = "block";
-  modalRecado.style.display = "block";
-}
-
+// Temporário: recados, calendário e outros continuam com localStorage até integração
+let notas = JSON.parse(localStorage.getItem("notas")) || {};
 function gerarCalendario() {
   calendario.innerHTML = '';
   for (let i = 1; i <= 30; i++) {
@@ -140,7 +119,7 @@ function abrirModal(dia) {
 
 function salvarNota() {
   notas[diaSelecionado] = notaDia.value;
-  salvar("notas", notas);
+  localStorage.setItem("notas", JSON.stringify(notas));
   overlay.style.display = "none";
   modal.style.display = "none";
   gerarCalendario();
@@ -159,15 +138,9 @@ overlay.onclick = () => {
   modalRecado.style.display = "none";
 };
 
-function salvar(chave, valor) {
-  localStorage.setItem(chave, JSON.stringify(valor));
-}
-
-gerarCalendario();
-renderizarPresentes();
-
 function logout() {
   localStorage.removeItem("usuario");
   window.location.href = "login.html";
 }
 
+gerarCalendario();

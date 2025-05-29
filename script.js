@@ -108,11 +108,15 @@ document.getElementById("form-recado").addEventListener("submit", async function
   e.preventDefault();
   const texto = document.getElementById("mensagem").value;
   const para = user === "Renato" ? "Pir" : "Renato";
-  const dado = { texto, para, data: new Date().toLocaleDateString() };
+  const agora = new Date();
+const data = agora.toLocaleDateString();
+const hora = agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const dado = { texto, para, de: user, data, hora };
   await addDoc(collection(db, "recados"), dado);
   this.reset();
   notificar("Recado enviado!");
 });
+
 
 window.abrirRecado = function () {
   const lista = document.getElementById("lista-recados");
@@ -120,12 +124,18 @@ window.abrirRecado = function () {
   const meus = recados.filter(r => r.para === user);
   meus.forEach(r => {
     const div = document.createElement("div");
-    div.innerHTML = `<p>${r.texto}<br><small>${r.data}</small></p>`;
+    div.className = "recado";
+    div.innerHTML = `
+      <div class="remetente">${r.de || "Desconhecido"}</div>
+      <div class="texto">${r.texto}</div>
+      <div class="hora">${r.data || ""} ${r.hora || ""}</div>
+    `;
     lista.appendChild(div);
   });
   overlay.style.display = "block";
   modalRecado.style.display = "block";
 };
+
 
 // -------- Calendário --------
 onSnapshot(collection(db, "notas"), (snapshot) => {

@@ -183,7 +183,8 @@ gerarCalendario();
 const recadoIcone = document.querySelector(".recado-icone");
 const painelEmojis = document.createElement("div");
 painelEmojis.id = "painel-emojis";
-painelEmojis.innerHTML = ["❤️", "😊", "🎁", "🥰", "😢", "😂", "😍", "🎉", "😴", "👏"].map(e => \`<button>${e}</button>\`).join("");
+const emojis = ["❤️", "😊", "🎁", "🥰", "😢", "😂", "😍", "🎉", "😴", "👏"];
+painelEmojis.innerHTML = emojis.map(e => `<button>${e}</button>`).join("");
 document.getElementById("form-recado").appendChild(painelEmojis);
 
 painelEmojis.addEventListener("click", (e) => {
@@ -198,9 +199,10 @@ let recadosIds = new Set();
 onSnapshot(collection(db, "recados"), (snapshot) => {
   snapshot.docChanges().forEach(change => {
     const r = change.doc.data();
-    if (change.type === "added" && r.para === user && !recadosIds.has(change.doc.id)) {
+    const id = change.doc.id;
+    if (change.type === "added" && r.para === user && !recadosIds.has(id)) {
       recadoIcone.classList.add("nova-mensagem");
-      recadosIds.add(change.doc.id);
+      recadosIds.add(id);
     }
   });
 });

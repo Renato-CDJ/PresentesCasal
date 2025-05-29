@@ -131,13 +131,15 @@ document.getElementById("form-recado").addEventListener("submit", async function
   notificar("Recado enviado!");
 });
 
+
 window.abrirRecado = function () {
   const lista = document.getElementById("lista-recados");
   lista.innerHTML = "";
-  const meus = recados.filter(r => r.para === user);
-  meus.forEach(r => {
+  const todos = recados.filter(r => r.para === user || r.de === user);
+  todos.forEach(r => {
     const div = document.createElement("div");
-    div.className = "recado";
+    const classe = r.de === user ? "eu" : "outro";
+    div.className = `recado ${classe}`;
     div.innerHTML = `
       <div class="remetente">${r.de || "Desconhecido"}</div>
       <div class="texto">${r.texto}</div>
@@ -150,6 +152,7 @@ window.abrirRecado = function () {
   lista.scrollTop = lista.scrollHeight;
   recadoIcone.classList.remove("nova-mensagem");
 };
+
 
 // Calendário
 onSnapshot(collection(db, "notas"), (snapshot) => {

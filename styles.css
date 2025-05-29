@@ -258,6 +258,7 @@ body.tema-escuro #modal, body.tema-escuro #modal-recado {
 }
 
 
+
 /* Estilo para balões de recados */
 .recado {
   max-width: 90%;
@@ -289,6 +290,71 @@ body.tema-escuro .recado {
 }
 
 /* Área de recados com rolagem */
+#lista-recados {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-top: 1rem;
+}
+
+#lista-recados::-webkit-scrollbar {
+  width: 6px;
+}
+
+#lista-recados::-webkit-scrollbar-thumb {
+  background-color: var(--cor-destaque);
+  border-radius: 10px;
+}
+
+
+/* Balões de chat */
+.recado {
+  max-width: 75%;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 0.8rem;
+  background: #fff0f5;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  position: relative;
+  clear: both;
+}
+
+body.tema-escuro .recado {
+  background: #2a2a40;
+  color: white;
+  border: 1px solid #444;
+}
+
+.recado .remetente {
+  font-weight: bold;
+  color: var(--cor-destaque);
+  margin-bottom: 0.3rem;
+}
+
+.recado .hora {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 0.5rem;
+  text-align: right;
+}
+
+/* Mensagens enviadas por mim */
+.recado.eu {
+  background-color: #ffe0f0;
+  float: right;
+  text-align: right;
+}
+
+body.tema-escuro .recado.eu {
+  background-color: #3a3a55;
+}
+
+/* Mensagens recebidas */
+.recado.outro {
+  float: left;
+}
+
+/* Área com rolagem */
 #lista-recados {
   max-height: 300px;
   overflow-y: auto;

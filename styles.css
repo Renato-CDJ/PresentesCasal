@@ -191,14 +191,3 @@ body.tema-escuro .presente-card {
 .presente-footer label {
   color: var(--cor-destaque);
 }
-
-.notificacao-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  background-color: red;
-  border-radius: 50%;
-  margin-left: 4px;
-  animation: pulse 1s infinite alternate;
-  vertical-align: middle;
-}

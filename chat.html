@@ -71,6 +71,9 @@
     }
 
     .message {
+  word-wrap: break-word;
+  word-break: break-word;
+  max-width: 85%;
       background: #fff;
       padding: 10px 14px;
       margin: 10px 0;
@@ -183,6 +186,9 @@
     }
 
     .message {
+  word-wrap: break-word;
+  word-break: break-word;
+  max-width: 85%;
       background: var(--cor-msg);
       color: var(--cor-texto);
     }
@@ -260,7 +266,7 @@
 
       const chat = document.getElementById("chat");
       const div = document.createElement("div");
-      div.className = "message";
+      div.className = "message"; div.style.wordBreak = "break-word"; div.style.maxWidth = "85%";
       div.innerHTML = `
         ${texto}
         <div class="reactions">

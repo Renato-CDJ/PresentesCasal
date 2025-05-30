@@ -1,5 +1,5 @@
 
-import { db, collection, addDoc, onSnapshot, serverTimestamp } from './firebase.js';
+import { db, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from './firebase.js';
 
 const user = localStorage.getItem("usuario");
 if (!user) window.location.href = "login.html";
@@ -14,26 +14,27 @@ window.enviarMensagem = async function () {
   const texto = input.value.trim();
   if (!texto) return;
 
-  const para = user === "Renato" ? "Pir" : "Renato";
   const agora = new Date();
   const data = agora.toLocaleDateString();
   const hora = agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   await addDoc(collection(db, "recados"), {
-    texto, de: user, para, data, hora, timestamp: serverTimestamp()
+    texto, de: user, data, hora, timestamp: serverTimestamp()
   });
 
   input.value = "";
 };
 
-// Receber mensagens em tempo real
-onSnapshot(collection(db, "recados"), snapshot => {
+// Receber todas as mensagens entre Renato e Pir
+onSnapshot(query(collection(db, "recados"), orderBy("timestamp", "asc")), snapshot => {
   const mensagens = [];
   snapshot.forEach(doc => {
     const r = doc.data();
-    if ((r.para === user || r.de === user)) mensagens.push(r);
+    // Garantir que seja entre Renato e Pir apenas
+    if ((r.de === "Renato" || r.de === "Pir")) {
+      mensagens.push(r);
+    }
   });
-  mensagens.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
   renderizarMensagens(mensagens);
 });
 

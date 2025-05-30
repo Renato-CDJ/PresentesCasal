@@ -5,8 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chat com Amor</title>
-  <script type="module" src="script-chat.js"></script>
-
   <style>
     body {
       margin: 0;
@@ -266,7 +264,7 @@
       div.innerHTML = `
         ${texto}
         <div class="reactions">
-          <button class="reaction-btn" onclick="openEmojiMenu(event)">✔️</button>
+          <button class="reaction-btn" onclick="openEmojiMenu(event)">➕</button>
         </div>
       `;
       chat.appendChild(div);
@@ -284,5 +282,6 @@
     </script>
     
 
+<script type="module" src="script-chat.js"></script>
 </body>
 </html>

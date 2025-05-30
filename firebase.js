@@ -14,4 +14,5 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
-export { collection, addDoc, getDocs, onSnapshot, doc, updateDoc, deleteDoc , orderBy};
+export { collection, addDoc, getDocs, onSnapshot, doc, updateDoc, deleteDoc };
+

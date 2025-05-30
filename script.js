@@ -22,15 +22,12 @@ window.logout = function () {
 
 const overlay = document.getElementById("overlay");
 const modal = document.getElementById("modal");
-const modalRecado = document.getElementById("modal-recado");
 const notaDia = document.getElementById("nota-dia");
 const calendario = document.getElementById("calendario");
 const notificacao = document.getElementById("notificacao");
-const recadoIcone = document.querySelector(".recado-icone");
 
 let diaSelecionado = null;
 let presentes = [];
-let recados = [];
 let notas = {};
 
 // --- Presentes ---
@@ -102,56 +99,6 @@ window.excluirPresente = async function(id) {
   notificar("Presente excluído!");
 };
 
-// --- Recados ---
-onSnapshot(collection(db, "recados"), (snapshot) => {
-  recados = snapshot.docs.map(doc => doc.data());
-});
-
-document.getElementById("form-recado")?.addEventListener("submit", async function(e) {
-  e.preventDefault();
-  const input = document.getElementById("mensagem");
-  const texto = input.value.trim();
-  if (!texto) return;
-  const para = user === "Renato" ? "Pir" : "Renato";
-  const agora = new Date();
-  const data = agora.toLocaleDateString();
-  const hora = agora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const dado = { texto, para, de: user, data, hora };
-  await addDoc(collection(db, "recados"), dado);
-  input.value = "";
-  notificar("Recado enviado!");
-});
-
-window.abrirRecado = function () {
-  const lista = document.getElementById("lista-recados");
-  if (!lista) return;
-  lista.innerHTML = "";
-  const todos = recados
-    .filter(r => r.para === user || r.de === user)
-    .sort((a, b) => {
-      const d1 = new Date(a.data + ' ' + a.hora);
-      const d2 = new Date(b.data + ' ' + b.hora);
-      return d1 - d2;
-    });
-  todos.forEach(r => {
-    const div = document.createElement("div");
-    const classe = r.de === user ? "eu" : "outro";
-    div.className = `recado ${classe}`;
-    div.innerHTML = `
-      <div class="remetente">${r.de || "Desconhecido"}</div>
-      <div class="texto">${r.texto}</div>
-      <div class="hora">${r.data || ""} ${r.hora || ""}</div>
-    `;
-    lista.appendChild(div);
-  });
-  overlay.style.display = "block";
-  modalRecado.style.display = "block";
-  setTimeout(() => {
-    lista.scrollTop = lista.scrollHeight;
-  }, 50);
-  recadoIcone?.classList.remove("nova-mensagem");
-};
-
 // --- Calendário ---
 onSnapshot(collection(db, "notas"), (snapshot) => {
   notas = {};
@@ -200,7 +147,4 @@ function notificar(texto) {
 overlay.onclick = () => {
   overlay.style.display = "none";
   modal.style.display = "none";
-  modalRecado.style.display = "none";
 };
-
-gerarCalendario();

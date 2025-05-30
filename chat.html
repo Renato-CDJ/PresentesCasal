@@ -1,0 +1,286 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat com Amor</title>
+  <style>
+    body {
+      margin: 0;
+      background: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    .phone {
+      width: 375px;
+      height: 667px;
+      background: #fefefe;
+      border: 12px solid #000;
+      border-radius: 40px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background-color: #ff4d6d;
+      color: white;
+      padding: 14px;
+      text-align: center;
+      font-weight: bold;
+      position: relative;
+    }
+
+    .tema-btn {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  background: white;
+  color: #ff4d6d;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.close-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background: white;
+      color: #ff4d6d;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .chat {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .message {
+      background: #fff;
+      padding: 10px 14px;
+      margin: 10px 0;
+      border-radius: 12px;
+      position: relative;
+      max-width: 80%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .reactions {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .reaction-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .emoji-menu {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 14px;
+      border-radius: 12px;
+      display: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .emoji-option {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .floating-emoji {
+      position: absolute;
+      font-size: 30px;
+      animation: floatUp 2s ease-out forwards;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-120px); }
+    }
+
+    .input-area {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ccc;
+      background: #fff;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    .input-area button {
+      background: #ff4d6d;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin-left: 10px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  
+    .tema-escuro {
+      --bg-cor: #1e1e2f;
+      --chat-fundo: #2a2a40;
+      --cor-msg: #3a3a50;
+      --cor-texto: #eee;
+    }
+    .tema-rosa {
+      --bg-cor: #fff0f5;
+      --chat-fundo: #ffe4ec;
+      --cor-msg: #fff;
+      --cor-texto: #333;
+    }
+    .tema-azul {
+      --bg-cor: #e3f2fd;
+      --chat-fundo: #bbdefb;
+      --cor-msg: #ffffff;
+      --cor-texto: #0d47a1;
+    }
+
+    body {
+      background: var(--bg-cor);
+      color: var(--cor-texto);
+    }
+
+    .chat {
+      background: var(--chat-fundo);
+    }
+
+    .message {
+      background: var(--cor-msg);
+      color: var(--cor-texto);
+    }
+    </style>
+    
+</head>
+<body class="tema-rosa">
+
+  <div class="phone">
+    <div class="header">
+  <button class="tema-btn" onclick="alternarTema()">💡</button>
+      Chat com Amor 💬❤️
+      <button class="close-btn" onclick="window.location.href='index.html'">Fechar</button>
+    </div>
+
+    <div class="chat" id="chat">
+      <!-- Mensagens serão adicionadas aqui -->
+    </div>
+
+    <div class="emoji-menu" id="emojiMenu">
+      <span class="emoji-option" onclick="react('❤️')">❤️</span>
+      <span class="emoji-option" onclick="react('😍')">😍</span>
+      <span class="emoji-option" onclick="react('😘')">😘</span>
+      <span class="emoji-option" onclick="react('😂')">😂</span>
+      <span class="emoji-option" onclick="react('🔥')">🔥</span>
+      <span class="emoji-option" onclick="react('👏')">👏</span>
+    </div>
+
+    <div class="input-area" style="position: relative;">
+      <button class="reaction-btn" style="position:absolute; left:10px; top:8px;" onclick="openEmojiMenu(event)">😊</button>
+<input type="text" id="mensagemInput" placeholder="Digite sua mensagem..." style="padding-left: 50px;" />
+      <button onclick="enviarMensagem()">➤</button>
+    </div>
+  </div>
+
+  <script>
+    let lastReactionButton = null;
+
+    function openEmojiMenu(event) {
+      const menu = document.getElementById('emojiMenu');
+      menu.style.display = 'flex';
+      lastReactionButton = event.target;
+    }
+
+    function react(emoji) {
+  const input = document.getElementById('mensagemInput');
+  input.value += emoji;
+
+      const menu = document.getElementById('emojiMenu');
+      menu.style.display = 'none';
+
+      const chat = document.getElementById('chat');
+      const emojiElem = document.createElement('div');
+      emojiElem.className = 'floating-emoji';
+      emojiElem.textContent = emoji;
+      const phoneRect = document.querySelector('.phone').getBoundingClientRect();
+      emojiElem.style.left = `${phoneRect.width / 2 - 15}px`;
+      emojiElem.style.top = `50%`;
+      chat.appendChild(emojiElem);
+      setTimeout(() => emojiElem.remove(), 2000);
+
+      if (lastReactionButton) {
+        const container = lastReactionButton.parentElement;
+        const span = document.createElement('span');
+        span.className = 'reaction-btn';
+        span.innerText = emoji;
+        container.appendChild(span);
+      }
+    }
+
+    function enviarMensagem() {
+      const input = document.getElementById("mensagemInput");
+      const texto = input.value.trim();
+      if (texto === "") return;
+
+      const chat = document.getElementById("chat");
+      const div = document.createElement("div");
+      div.className = "message";
+      div.innerHTML = `
+        ${texto}
+        <div class="reactions">
+          <button class="reaction-btn" onclick="openEmojiMenu(event)">✔️</button>
+        </div>
+      `;
+      chat.appendChild(div);
+      input.value = "";
+      chat.scrollTop = chat.scrollHeight;
+    }
+  
+    let temaAtual = 0;
+    const temas = ["tema-rosa", "tema-azul", "tema-escuro"];
+    function alternarTema() {
+      document.body.classList.remove(...temas);
+      temaAtual = (temaAtual + 1) % temas.length;
+      document.body.classList.add(temas[temaAtual]);
+    }
+    </script>
+    
+
+</body>
+</html>

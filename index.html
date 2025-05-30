@@ -14,8 +14,14 @@
   <header>
     <h1>Nosso Cantinho 🎁❤️</h1>
     <p>Em desenvolvimento até 01/09/2025 💡</p>
-    <button class="tema-btn" onclick="alternarTema()">💡</button>
-    <a href="chat.html" class="chat-atalho" title="Abrir recadinhos 📱">📱</a>
+    
+        <button class="tema-btn" onclick="alternarTema()">💡</button>
+        
+    <a href="chat.html" class="chat-atalho" title="Abrir recadinhos 📱">
+      📱 <span id="notificacao-chat" class="notificacao-dot" style="display:none;"></span>
+    </a>
+    
+        
     <button onclick="logout()" class="logout-btn">Sair</button>
   </header>
 
@@ -40,7 +46,23 @@
       <div id="lista-presentes"></div>
     </section>
 
-    
+    <section>
+      <h2>Calendário de Datas</h2>
+      <div id="calendario" class="calendario"></div>
+    </section>
+
+    <section id="recadinhos">
+      <div class="chat-container">
+        <div class="chat-header">
+          <span id="nome-chat">Chat com ❤️</span>
+        </div>
+        <div id="lista-recados" class="chat-mensagens"></div>
+        <form id="form-recado" class="chat-input-area">
+          <input type="text" id="mensagem" placeholder="Digite uma mensagem..." required />
+          <button type="submit">Enviar</button>
+        </form>
+      </div>
+    </section>
   </main>
 
   <script type="module" src="firebase.js"></script>

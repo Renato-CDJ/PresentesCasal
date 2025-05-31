@@ -25,6 +25,12 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
+    }
+
+    .phone.tema-escuro {
+      background: #1e1e2f;
+      color: white;
     }
 
     .header {
@@ -34,12 +40,14 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
     }
 
     .perfil {
       display: flex;
       align-items: center;
       gap: 10px;
+      position: relative;
     }
 
     .perfil img {
@@ -47,10 +55,81 @@
       height: 36px;
       border-radius: 50%;
       object-fit: cover;
+      cursor: pointer;
+      border: 1px solid white;
     }
 
     .perfil span {
       font-weight: bold;
+    }
+
+    .menu-foto {
+      display: none;
+      position: absolute;
+      top: 45px;
+      left: 0;
+      background: white;
+      color: black;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      z-index: 10;
+      flex-direction: column;
+    }
+
+    .menu-foto button {
+      background: none;
+      border: none;
+      padding: 10px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .ver-foto {
+      display: none;
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+    }
+
+    .ver-foto img {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid white;
+    }
+
+    .menu-icon {
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .menu-suspenso {
+      display: none;
+      position: absolute;
+      right: 10px;
+      top: 56px;
+      background: white;
+      color: black;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .menu-suspenso.ativo {
+      display: flex;
+    }
+
+    .menu-suspenso button {
+      background: none;
+      border: none;
+      padding: 10px;
+      text-align: left;
+      cursor: pointer;
     }
 
     .chat {
@@ -60,6 +139,10 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
+    }
+
+    .chat.tema-escuro {
+      background: #2a2a40;
     }
 
     .message {
@@ -115,18 +198,45 @@
       font-size: 18px;
       cursor: pointer;
     }
+
+    #previewImagem {
+      display: none;
+      max-width: 100px;
+      margin-top: 8px;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
-  <div class="phone">
+  <div class="phone" id="phone">
     <div class="header">
       <div class="perfil">
-        <img src="https://via.placeholder.com/36" alt="Foto de Perfil">
+        <img id="fotoPreview" src="https://via.placeholder.com/36" alt="Foto" onclick="abrirMenuFoto()">
         <span id="nomeUsuario">Usuário</span>
+        <div id="menuFoto" class="menu-foto">
+          <button onclick="verFoto()">👁 Ver foto</button>
+          <button onclick="document.getElementById('fotoPerfilInput').click()">🖼 Novo perfil</button>
+        </div>
+      </div>
+      <div class="menu-icon" onclick="abrirMenu()">☰</div>
+      <div class="menu-suspenso" id="menuSuspenso">
+        <button onclick="alternarTema()">💡 Alternar tema</button>
+        <button onclick="bloquear()">🔒 Bloquear tela</button>
+        <button onclick="window.location.href='index.html'">❌ Fechar chat</button>
       </div>
     </div>
 
+    <div id="verFoto" class="ver-foto">
+      <img id="fotoAmpliada" src="" alt="Foto grande" onclick="fecharFoto()"/>
+    </div>
+
+    <input type="file" id="fotoPerfilInput" accept="image/*" style="display: none" onchange="atualizarFoto(event)" />
+
     <div id="chat" class="chat"></div>
+
+    <div id="previewImagemContainer">
+      <img id="previewImagem" />
+    </div>
 
     <div class="input-area">
       <input type="text" id="mensagemInput" placeholder="Digite sua mensagem..." />
@@ -136,5 +246,73 @@
 
   <script type="module" src="firebase.js"></script>
   <script type="module" src="script-chat.js"></script>
+  <script>
+    const nomeUsuario = localStorage.getItem("usuario") || "Usuário";
+    document.getElementById("nomeUsuario").textContent = nomeUsuario;
+
+    function abrirMenu() {
+      document.getElementById("menuSuspenso").classList.toggle("ativo");
+    }
+
+    function alternarTema() {
+      const phone = document.getElementById("phone");
+      const chat = document.getElementById("chat");
+      phone.classList.toggle("tema-escuro");
+      chat.classList.toggle("tema-escuro");
+    }
+
+    function bloquear() {
+      window.location.href = "lockscreen.html";
+    }
+
+    function abrirMenuFoto() {
+      const menu = document.getElementById("menuFoto");
+      menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+      menu.style.flexDirection = "column";
+    }
+
+    function verFoto() {
+      const src = document.getElementById("fotoPreview").src;
+      document.getElementById("fotoAmpliada").src = src;
+      document.getElementById("verFoto").style.display = "block";
+    }
+
+    function fecharFoto() {
+      document.getElementById("verFoto").style.display = "none";
+    }
+
+    function atualizarFoto(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        document.getElementById("fotoPreview").src = reader.result;
+        localStorage.setItem("fotoPerfil", reader.result);
+      };
+      if (file) reader.readAsDataURL(file);
+    }
+
+    // Restaurar imagem se houver
+    const img = localStorage.getItem("fotoPerfil");
+    if (img) document.getElementById("fotoPreview").src = img;
+
+    // Preview de imagem colada
+    document.getElementById("mensagemInput").addEventListener("paste", function (e) {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (let index in items) {
+        const item = items[index];
+        if (item.kind === "file") {
+          const blob = item.getAsFile();
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            const base64Image = event.target.result;
+            const preview = document.getElementById("previewImagem");
+            preview.src = base64Image;
+            preview.style.display = "block";
+          };
+          reader.readAsDataURL(blob);
+        }
+      }
+    });
+  </script>
 </body>
 </html>

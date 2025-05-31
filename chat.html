@@ -295,7 +295,7 @@
     const img = localStorage.getItem("fotoPerfil");
     if (img) document.getElementById("fotoPreview").src = img;
 
-    // Preview de imagem colada
+    // Preview de aimagem colada
     document.getElementById("mensagemInput").addEventListener("paste", function (e) {
       const items = (e.clipboardData || e.originalEvent.clipboardData).items;
       for (let index in items) {
